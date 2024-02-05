@@ -159,24 +159,24 @@ struct WishView: View {
         } else if !hasVoted {
             voteCount += 1
             hasVoted = true
-            upvoteTimerContainer.timer = Timer(timeInterval: 10, repeats: false, block: { _ in
-                upvote()
+            let container = upvoteTimerContainer
+            let id = wishResponse.id
+            let completion = voteActionCompletion
+            let alert = alertModel
+            upvoteTimerContainer.timer = Timer(timeInterval: 10, repeats: false, block: { [weak container] _ in
+                container?.timer?.invalidate()
+                container?.timer = nil
+                let request = VoteWishRequest(wishId: id)
+                WishApi.voteWish(voteRequest: request) { result in
+                    switch result {
+                    case .success:
+                        completion()
+                    case .failure(let error):
+                        alert.alertReason = .voteReturnedError(error.localizedDescription)
+                        alert.showAlert = true
+                    }
+                }
             })
-        }
-    }
-    
-    private func upvote() {
-        upvoteTimerContainer.timer?.invalidate()
-        upvoteTimerContainer.timer = nil
-        let request = VoteWishRequest(wishId: wishResponse.id)
-        WishApi.voteWish(voteRequest: request) { result in
-            switch result {
-            case .success:
-                voteActionCompletion()
-            case .failure(let error):
-                alertModel.alertReason = .voteReturnedError(error.localizedDescription)
-                alertModel.showAlert = true
-            }
         }
     }
 }

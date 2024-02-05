@@ -237,4 +237,9 @@ extension WishView {
 
 private class TimerContainer {
     var timer: Timer?
+    
+    deinit {
+        timer?.fire()
+        timer = nil
+    }
 }

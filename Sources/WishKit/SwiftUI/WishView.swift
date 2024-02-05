@@ -34,6 +34,8 @@ struct WishView: View {
     private let voteActionCompletion: () -> Void
 
     private let viewKind: ViewKind
+    
+    private let upvoteTimerContainer = TimerContainer()
 
     private var descriptionLineLimit: Int? {
         if viewKind == .detail {
@@ -71,6 +73,8 @@ struct WishView: View {
                 switch alertModel.alertReason {
                 case .alreadyVoted:
                     title = Text(WishKit.config.localization.youCanOnlyVoteOnce)
+                case .cantRemoveVote:
+                    title = Text(WishKit.config.localization.youCantRemoveVote)
                 case .alreadyImplemented:
                     title = Text(WishKit.config.localization.youCanNotVoteForAnImplementedWish)
                 case .voteReturnedError(let error):
@@ -144,18 +148,30 @@ struct WishView: View {
             return
         }
 
-        if wishResponse.votingUsers.contains(where: { user in user.uuid == userUUID }) || hasVoted {
-            alertModel.alertReason = .alreadyVoted
+        if hasVoted && upvoteTimerContainer.timer != nil {
+            upvoteTimerContainer.timer?.invalidate()
+            upvoteTimerContainer.timer = nil
+            voteCount -= 1
+            hasVoted = false
+        } else if wishResponse.votingUsers.contains(where: { user in user.uuid == userUUID }) {
+            alertModel.alertReason = .cantRemoveVote
             alertModel.showAlert = true
-            return
+        } else if !hasVoted {
+            voteCount += 1
+            hasVoted = true
+            upvoteTimerContainer.timer = Timer(timeInterval: 10, repeats: false, block: { _ in
+                upvote()
+            })
         }
-
+    }
+    
+    private func upvote() {
+        upvoteTimerContainer.timer?.invalidate()
+        upvoteTimerContainer.timer = nil
         let request = VoteWishRequest(wishId: wishResponse.id)
         WishApi.voteWish(voteRequest: request) { result in
             switch result {
             case .success:
-                voteCount += 1
-                hasVoted = true
                 voteActionCompletion()
             case .failure(let error):
                 alertModel.alertReason = .voteReturnedError(error.localizedDescription)
@@ -217,4 +233,8 @@ extension WishView {
             return PrivateTheme.elementBackgroundColor.dark
         }
     }
+}
+
+private class TimerContainer {
+    var timer: Timer?
 }

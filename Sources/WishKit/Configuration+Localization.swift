@@ -29,8 +29,10 @@ extension Configuration {
         public var upvote: String
 
         public var info: String
-
+        
         public var youCanOnlyVoteOnce: String
+        
+        public var youCantRemoveVote: String
 
         public var youCanNotVoteForAnImplementedWish: String
 
@@ -96,6 +98,7 @@ extension Configuration {
             upvote: String = Localization.default().upvote,
             info: String = Localization.default().info,
             youCanOnlyVoteOnce: String = Localization.default().youCanOnlyVoteOnce,
+            youCantRemoveVote: String = Localization.default().youCantRemoveVote,
             youCanNotVoteForAnImplementedWish: String = Localization.default().youCanNotVoteForAnImplementedWish,
             youCanNotVoteForYourOwnWish: String = Localization.default().youCanNotVoteForYourOwnWish,
             poweredBy: String = Localization.default().poweredBy,
@@ -134,6 +137,7 @@ extension Configuration {
             self.upvote = upvote
             self.info = info
             self.youCanOnlyVoteOnce = youCanOnlyVoteOnce
+            self.youCantRemoveVote = youCantRemoveVote
             self.youCanNotVoteForAnImplementedWish = youCanNotVoteForAnImplementedWish
             self.youCanNotVoteForYourOwnWish = youCanNotVoteForYourOwnWish
             self.poweredBy = poweredBy
@@ -175,6 +179,7 @@ extension Configuration {
                 upvote: "Upvote",
                 info: "Info",
                 youCanOnlyVoteOnce: "You can only vote once.",
+                youCantRemoveVote: "You can't remove your vote.",
                 youCanNotVoteForAnImplementedWish: "You can not vote for a feature that is already implemented.",
                 youCanNotVoteForYourOwnWish: "You cannot vote for your own feature request.",
                 poweredBy: "Powered by",

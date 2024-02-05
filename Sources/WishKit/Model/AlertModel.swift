@@ -12,6 +12,7 @@ final class AlertModel: ObservableObject {
 
     enum AlertReason {
         case alreadyVoted
+        case cantRemoveVote
         case alreadyImplemented
         case voteReturnedError(String)
 
